@@ -102,7 +102,6 @@
 
     <script>
         let display = document.getElementById("display");
-        let earningsData = document.getElementById("finBtn");
 
         // Appending values to the display
         function appendToDisplay(value) {
@@ -161,20 +160,26 @@
 
         // Fetch Earnings Data from Alpha Vantage API
         function fetchEarningsData() {
-            let symbol = prompt("Enter stock symbol:");
+            let symbol = prompt("Enter stock symbol (e.g., AAPL):");
             let apiKey = " KWMSNDEFXQ39W97N"; // Replace with your actual API key
             let url = `https://www.alphavantage.co/query?function=EARNINGS&symbol=${symbol}&apikey=${apiKey}`;
 
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    if (data && data.annualEarnings) {
-                        alert(`Earnings data for ${symbol}:\nAnnual Earnings: ${data.annualEarnings[0].reportedEPS}`);
+                    if (data && data['annualEarnings'] && data['annualEarnings'].length > 0) {
+                        let earnings = data['annualEarnings'][0];
+                        let reportedEPS = earnings['reportedEPS'] || "N/A";
+                        let year = earnings['fiscalYearEnding'] || "N/A";
+                        alert(`Earnings data for ${symbol}:\nFiscal Year: ${year}\nReported EPS: ${reportedEPS}`);
                     } else {
-                        alert("No earnings data found.");
+                        alert(`No earnings data found for symbol ${symbol}. Please try again.`);
                     }
                 })
-                .catch(error => alert("Error fetching earnings data."));
+                .catch(error => {
+                    alert("Error fetching earnings data. Please check the symbol and try again.");
+                    console.error(error);
+                });
         }
     </script>
 </body>
