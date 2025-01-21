@@ -1,63 +1,21 @@
-let currentInput = '0';
-let previousInput = '';
-let operator = null;
-let history = [];
+let currentExpression = "";
 
-function updateDisplay(value) {
-  document.getElementById('display').innerText = value;
+function appendToDisplay(value) {
+    currentExpression += value;
+    document.getElementById('display').textContent = currentExpression;
 }
 
-function appendToScreen(value) {
-  if (currentInput === '0' && value !== '.') {
-    currentInput = value.toString();
-  } else {
-    currentInput += value.toString();
-  }
-  updateDisplay(currentInput);
+function clearDisplay() {
+    currentExpression = "";
+    document.getElementById('display').textContent = "";
 }
 
-function clearScreen() {
-  currentInput = '0';
-  operator = null;
-  previousInput = '';
-  updateDisplay(currentInput);
-}
-
-function calculate() {
-  if (operator && previousInput !== '') {
-    let result;
-    const prev = parseFloat(previousInput);
-    const current = parseFloat(currentInput);
-
-    switch (operator) {
-      case '+':
-        result = prev + current;
-        break;
-      case '-':
-        result = prev - current;
-        break;
-      case '*':
-        result = prev * current;
-        break;
-      case '/':
-        result = prev / current;
-        break;
-      case '%':
-        result = (prev * current) / 100;
-        break;
-      default:
-        return;
+function calculateResult() {
+    try {
+        currentExpression = eval(currentExpression).toString();
+        document.getElementById('display').textContent = currentExpression;
+    } catch (error) {
+        document.getElementById('display').textContent = "Error";
+        currentExpression = "";
     }
-    currentInput = result.toString();
-    updateDisplay(currentInput);
-    history.push(`${previousInput} ${operator} ${currentInput} = ${result}`);
-    showHistory();
-    operator = null;
-    previousInput = '';
-  }
-}
-
-function showHistory() {
-  const historyElement = document.getElementById('history');
-  historyElement.innerHTML = history.map(entry => `<div>${entry}</div>`).join('');
 }
