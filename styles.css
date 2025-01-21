@@ -1,95 +1,74 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-  font-family: 'Arial', sans-serif;
-  background: #f4f4f4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
+    background-color: #282c34;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .calculator {
-  width: 320px;
-  background-color: #333;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background-color: #444;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    padding: 20px;
 }
 
-.screen {
-  padding: 20px;
-  background: #1c1c1c;
-  text-align: right;
-  color: #fff;
-  font-size: 36px;
-  font-weight: bold;
-  border-bottom: 1px solid #444;
-}
-
-#display {
-  margin: 0;
+.display {
+    font-size: 2rem;
+    color: #fff;
+    padding: 10px;
+    background-color: #222;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    min-height: 40px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 10px;
-  padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 10px;
 }
 
-.button {
-  background-color: #444;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-size: 18px;
-  padding: 20px;
-  transition: background-color 0.3s ease;
-  cursor: pointer;
+button {
+    padding: 20px;
+    background-color: #555;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    color: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-.button:hover {
-  background-color: #5c5c5c;
+button:hover {
+    background-color: #888;
+    transform: scale(1.1);
 }
 
-.operator {
-  background-color: #f39c12;
+button:active {
+    transform: scale(0.9);
 }
 
-.operator:hover {
-  background-color: #e67e22;
+button.operator {
+    background-color: #ff7f50;
 }
 
-.equal {
-  background-color: #27ae60;
-  grid-column: span 2;
+button.equal {
+    background-color: #4CAF50;
+    grid-column: span 2;
 }
 
-.equal:hover {
-  background-color: #2ecc71;
-}
-
-.clear {
-  background-color: #e74c3c;
-  grid-column: span 2;
-}
-
-.clear:hover {
-  background-color: #c0392b;
-}
-
-.decimal {
-  background-color: #3498db;
-}
-
-.decimal:hover {
-  background-color: #2980b9;
-}
-
-#history {
-  background-color: #222;
-  color: #bbb;
-  font-size: 14px;
-  padding: 10px;
-  border-top: 1px solid #444;
+button.clear {
+    background-color: #f44336;
+    grid-column: span 2;
 }
