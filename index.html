@@ -1,52 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Calculator</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #282c34;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .calculator {
+            background: #1c1f26;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 15px;
+            width: 320px;
+        }
+        .calculator input,
+        .calculator button {
+            padding: 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            text-align: center;
+            color: white;
+            background-color: #444;
+            transition: background-color 0.3s ease;
+        }
+        .calculator button:hover {
+            background-color: #666;
+        }
+        .calculator input {
+            grid-column: span 4;
+            font-size: 24px;
+            background-color: #333;
+            text-align: right;
+            color: #ddd;
+        }
+        .calculator button:active {
+            background-color: #888;
+        }
+        .calculator .button-special {
+            background-color: #e91e63;
+        }
+        .calculator .button-special:hover {
+            background-color: #c2185b;
+        }
+        .calculator .button-finish {
+            grid-column: span 2;
+            background-color: #4caf50;
+        }
+        .calculator .button-magic {
+            grid-column: span 2;
+            background-color: #ff9800;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
     <div class="calculator">
-      <div class="display">
-        <input type="text" id="display" disabled />
-      </div>
-      <div class="buttons">
-        <button class="btn" onclick="appendToDisplay('7')">7</button>
-        <button class="btn" onclick="appendToDisplay('8')">8</button>
-        <button class="btn" onclick="appendToDisplay('9')">9</button>
-        <button class="btn operator" onclick="appendToDisplay('+')">+</button>
-        <button class="btn" onclick="appendToDisplay('4')">4</button>
-        <button class="btn" onclick="appendToDisplay('5')">5</button>
-        <button class="btn" onclick="appendToDisplay('6')">6</button>
-        <button class="btn operator" onclick="appendToDisplay('-')">-</button>
-        <button class="btn" onclick="appendToDisplay('1')">1</button>
-        <button class="btn" onclick="appendToDisplay('2')">2</button>
-        <button class="btn" onclick="appendToDisplay('3')">3</button>
-        <button class="btn operator" onclick="appendToDisplay('*')">*</button>
-        <button class="btn" onclick="appendToDisplay('0')">0</button>
-        <button class="btn" onclick="appendToDisplay('.')">.</button>
-        <button class="btn" onclick="calculate()">=</button>
-        <button class="btn operator" onclick="appendToDisplay('/')">/</button>
-        <button class="btn" onclick="appendToDisplay('(')">()</button>
-        <button class="btn" onclick="clearDisplay()">C</button>
-      </div>
-    </div>
-    <div class="command-line">
-      <input type="text" id="command-input" placeholder="Enter Finance Command (e.g., MSFT max)" />
-      <button onclick="executeCommand()">Execute</button>
-    </div>
-    <div class="magic-buttons">
-      <button onclick="magicFunction('time')">Magic: Time</button>
-      <button onclick="magicFunction('temperature')">Magic: Temperature</button>
-      <button onclick="magicFunction('speed')">Magic: Speed</button>
-      <button onclick="magicFunction('data')">Magic: Data</button>
-      <button onclick="magicFunction('area')">Magic: Area</button>
-      <button onclick="magicFunction('tip')">Magic: Tip</button>
-    </div>
-  </div>
+        <input type="text" id="display" disabled>
+        <button class="button-special" onclick="clearDisplay()">C</button>
+        <button onclick="appendToDisplay('(')">(</button>
+        <button onclick="appendToDisplay(')')">)</button>
+        <button onclick="appendToDisplay('/')">/</button>
 
-  <script src="script.js"></script>
+        <button onclick="appendToDisplay('7')">7</button>
+        <button onclick="appendToDisplay('8')">8</button>
+        <button onclick="appendToDisplay('9')">9</button>
+        <button onclick="appendToDisplay('*')">*</button>
+
+        <button onclick="appendToDisplay('4')">4</button>
+        <button onclick="appendToDisplay('5')">5</button>
+        <button onclick="appendToDisplay('6')">6</button>
+        <button onclick="appendToDisplay('-')">-</button>
+
+        <button onclick="appendToDisplay('1')">1</button>
+        <button onclick="appendToDisplay('2')">2</button>
+        <button onclick="appendToDisplay('3')">3</button>
+        <button onclick="appendToDisplay('+')">+</button>
+
+        <button onclick="appendToDisplay('0')">0</button>
+        <button onclick="appendToDisplay('.')">.</button>
+        <button class="button-finish" onclick="calculateResult()">=</button>
+        <button onclick="magic()">MAGIC</button>
+
+        <button class="button-magic" id="finBtn" onclick="fetchEarningsData()">FIN</button>
+    </div>
+
+    <script>
+        let display = document.getElementById("display");
+        let earningsData = document.getElementById("finBtn");
+
+        // Appending values to the display
+        function appendToDisplay(value) {
+            display.value += value;
+        }
+
+        // Clearing the display
+        function clearDisplay() {
+            display.value = '';
+        }
+
+        // Calculating the result
+        function calculateResult() {
+            try {
+                display.value = eval(display.value); // eval is fine here as it's simple expressions.
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+
+        // MAGIC button functionality
+        function magic() {
+            let type = prompt("Select calculation type: time, temp, speed, data, area, tip");
+            switch(type.toLowerCase()) {
+                case "time":
+                    let time = prompt("Enter time in seconds:");
+                    alert(`${time} seconds is ${(time / 60).toFixed(2)} minutes`);
+                    break;
+                case "temp":
+                    let temp = prompt("Enter temperature in Celsius:");
+                    alert(`${temp}°C is ${(temp * 9/5 + 32).toFixed(2)}°F`);
+                    break;
+                case "speed":
+                    let distance = prompt("Enter distance in km:");
+                    let timeSpeed = prompt("Enter time in hours:");
+                    alert(`Speed is ${(distance / timeSpeed).toFixed(2)} km/h`);
+                    break;
+                case "data":
+                    let dataAmount = prompt("Enter data in bytes:");
+                    alert(`${dataAmount} bytes = ${(dataAmount / 1024).toFixed(2)} KB`);
+                    break;
+                case "area":
+                    let length = prompt("Enter length in meters:");
+                    let width = prompt("Enter width in meters:");
+                    alert(`Area is ${(length * width).toFixed(2)} m²`);
+                    break;
+                case "tip":
+                    let bill = prompt("Enter bill amount:");
+                    let tipPercentage = prompt("Enter tip percentage:");
+                    alert(`Tip is ${(bill * tipPercentage / 100).toFixed(2)} units`);
+                    break;
+                default:
+                    alert("Invalid option.");
+            }
+        }
+
+        // Fetch Earnings Data from Alpha Vantage API
+        function fetchEarningsData() {
+            let symbol = prompt("Enter stock symbol:");
+            let apiKey = " KWMSNDEFXQ39W97N"; // Replace with your actual API key
+            let url = `https://www.alphavantage.co/query?function=EARNINGS&symbol=${symbol}&apikey=${apiKey}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.annualEarnings) {
+                        alert(`Earnings data for ${symbol}:\nAnnual Earnings: ${data.annualEarnings[0].reportedEPS}`);
+                    } else {
+                        alert("No earnings data found.");
+                    }
+                })
+                .catch(error => alert("Error fetching earnings data."));
+        }
+    </script>
 </body>
 </html>
