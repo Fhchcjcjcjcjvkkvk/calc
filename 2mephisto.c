@@ -44,7 +44,7 @@ int tryFTPLogin(char *ftpServer, int port, char *username, char *password) {
 
 int main(int argc, char *argv[]) {
     if (argc != 5) {
-        printf("Usage: cmephisto.exe -l <username> -P <passwordlist> ftp://<ip>:<port>\n");
+        printf("Usage: 2mephisto.exe -l <username> -P <passwordlist> ftp://<ip>:<port>\n");
         return 1;
     }
 
