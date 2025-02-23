@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <mysql/mysql.h>
+#include "mysql.h"
 #include <windows.h>
 
 // Function to set color
