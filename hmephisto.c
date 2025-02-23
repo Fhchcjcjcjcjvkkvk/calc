@@ -1,80 +1,69 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <openssl/evp.h>
-#include <openssl/sha.h>
 #include <openssl/md5.h>
-#include <openssl/blake2.h>
-#include <windows.h>
+#include <openssl/sha.h>
 
-#define WORDLIST_FILE "pwd.txt"
-#define HASH_BUFFER_SIZE 64
-
-void usage(const char *progname) {
-    fprintf(stderr, "Usage: %s <hash> -d <hash_type>\n", progname);
-    fprintf(stderr, "Supported hash types: sha256, sha512, md5, blake2b, sha1\n");
+void usage() {
+    printf("Usage: hmephisto.exe <hash> -d <type>\n");
+    printf("Types: sha256, sha512, md5, sha1\n");
+    printf("This program uses a wordlist 'pwd.txt' for decryption.\n");
 }
 
-int compare_hash(const char *hash, const char *computed_hash, int hash_len) {
-    return strncmp(hash, computed_hash, hash_len) == 0;
-}
+int compare_hash(const char *hash, const char *word, const char *type) {
+    unsigned char digest[SHA512_DIGEST_LENGTH];
+    char mdString[SHA512_DIGEST_LENGTH*2+1];
+    int i;
 
-void compute_hash(const char *input, char *output, const char *hash_type) {
-    unsigned char hash[HASH_BUFFER_SIZE];
-    unsigned int length = 0;
-
-    if (strcmp(hash_type, "sha256") == 0) {
-        length = SHA256_DIGEST_LENGTH;
-        SHA256((unsigned char *)input, strlen(input), hash);
-    } else if (strcmp(hash_type, "sha512") == 0) {
-        length = SHA512_DIGEST_LENGTH;
-        SHA512((unsigned char *)input, strlen(input), hash);
-    } else if (strcmp(hash_type, "md5") == 0) {
-        length = MD5_DIGEST_LENGTH;
-        MD5((unsigned char *)input, strlen(input), hash);
-    } else if (strcmp(hash_type, "blake2b") == 0) {
-        length = BLAKE2B_OUTBYTES;
-        BLAKE2b(hash, BLAKE2B_OUTBYTES, input, strlen(input), NULL, 0);
-    } else if (strcmp(hash_type, "sha1") == 0) {
-        length = SHA_DIGEST_LENGTH;
-        SHA1((unsigned char *)input, strlen(input), hash);
+    if (strcmp(type, "sha256") == 0) {
+        SHA256((unsigned char*)word, strlen(word), digest);
+        for (i = 0; i < SHA256_DIGEST_LENGTH; ++i)
+            sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
+    } else if (strcmp(type, "sha512") == 0) {
+        SHA512((unsigned char*)word, strlen(word), digest);
+        for (i = 0; i < SHA512_DIGEST_LENGTH; ++i)
+            sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
+    } else if (strcmp(type, "md5") == 0) {
+        MD5((unsigned char*)word, strlen(word), digest);
+        for (i = 0; i < MD5_DIGEST_LENGTH; ++i)
+            sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
+    } else if (strcmp(type, "sha1") == 0) {
+        SHA1((unsigned char*)word, strlen(word), digest);
+        for (i = 0; i < SHA_DIGEST_LENGTH; ++i)
+            sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
+    } else {
+        return 0;
     }
 
-    for (unsigned int i = 0; i < length; i++) {
-        sprintf(output + (i * 2), "%02x", hash[i]);
-    }
-    output[length * 2] = '\0';
+    return strcmp(hash, mdString) == 0;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
     if (argc != 4 || strcmp(argv[2], "-d") != 0) {
-        usage(argv[0]);
-        return EXIT_FAILURE;
+        usage();
+        return 1;
     }
 
     const char *hash = argv[1];
-    const char *hash_type = argv[3];
-    char computed_hash[HASH_BUFFER_SIZE * 2 + 1];
-    char word[256];
-    FILE *wordlist = fopen(WORDLIST_FILE, "r");
+    const char *type = argv[3];
 
+    FILE *wordlist = fopen("pwd.txt", "r");
     if (!wordlist) {
-        perror("Error opening wordlist file");
-        return EXIT_FAILURE;
+        printf("Failed to open wordlist 'pwd.txt'.\n");
+        return 1;
     }
 
+    char word[256];
     while (fgets(word, sizeof(word), wordlist)) {
-        word[strcspn(word, "\r\n")] = '\0'; // Remove newline characters
-        compute_hash(word, computed_hash, hash_type);
-
-        if (compare_hash(hash, computed_hash, strlen(hash))) {
+        word[strcspn(word, "\n")] = 0; // Remove newline character
+        if (compare_hash(hash, word, type)) {
             printf("Password found: %s\n", word);
             fclose(wordlist);
-            return EXIT_SUCCESS;
+            return 0;
         }
     }
 
-    printf("Password not found in wordlist\n");
+    printf("Password not found in wordlist.\n");
     fclose(wordlist);
-    return EXIT_FAILURE;
+    return 1;
 }
